@@ -7,7 +7,10 @@ import {
 } from './StyledUserAccordion';
 import { RepoModel } from '../../api/types';
 
-const CollapsedContent = ({ repo }: { repo: RepoModel }) => {
+type CollapsedContentProps = {
+    repo: RepoModel;
+};
+const CollapsedContent = ({ repo }: CollapsedContentProps) => {
     return (
         <StyledCollapsedContent>
             <StyledLeftSideContent>

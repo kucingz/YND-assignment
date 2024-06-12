@@ -3,13 +3,13 @@ interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
 }
 
-export const StyledExpandContainer = styled(`div`)(() => ({
+export const StyledExpandContainer = styled(`div`)({
     display: 'flex',
     justifyContent: 'space-between',
     backgroundColor: '#f2f2f2',
     alignItems: 'center',
     padding: '10px',
-}));
+});
 
 export const ExpandMore = styled((props: ExpandMoreProps) => {
     const { expand, ...other } = props;
@@ -22,19 +22,25 @@ export const ExpandMore = styled((props: ExpandMoreProps) => {
     }),
 }));
 
-export const StyledCollapsedContent = styled(`div`)(() => ({
+export const StyledCollapsedContent = styled(`div`)({
     backgroundColor: '#e0e0e0',
-    marginTop: '10px',
-    marginLeft: '20px',
+    margin: '10px 0px 0px 20px',
     padding: '10px',
-}));
+    wordBreak: 'break-all',
+});
 
-export const StyledStarsTypography = styled(Typography)(() => ({
+export const StyledStarsTypography = styled(Typography)({
     display: 'flex',
     marginLeft: '10px',
-}));
+});
 
-export const StyledLeftSideContent = styled(`div`)(() => ({
+export const StyledLeftSideContent = styled(`div`)({
     display: 'flex',
     justifyContent: 'space-between',
-}));
+});
+
+export const StyledUserAccordionContainer = styled(`div`)(
+    ({ lastListItem }: { lastListItem: boolean }) => ({
+        paddingBottom: lastListItem ? '60px' : '',
+    })
+);

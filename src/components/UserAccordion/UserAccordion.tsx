@@ -3,30 +3,38 @@ import { Collapse } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import * as React from 'react';
 import githubApi from '../../api/services/GithubService';
-import { ExpandMore, StyledExpandContainer } from './StyledUserAccordion';
+import {
+    ExpandMore,
+    StyledExpandContainer,
+    StyledUserAccordionContainer,
+} from './StyledUserAccordion';
 import CollapsedContent from './CollapsedContent';
 import { RepoModel, UserListItemModel } from '../../api/types';
 
-const UserAccordion = ({ userData }: { userData: UserListItemModel }) => {
+type UserAccordionProps = {
+    userData: UserListItemModel;
+    lastListItem: boolean;
+};
+const UserAccordion = ({ userData, lastListItem }: UserAccordionProps) => {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
 
-    const { data: userData2 } = useQuery({
+    const { data: userRepos } = useQuery({
         queryKey: ['userRepos', userData.login],
         queryFn: () => githubApi.getRepoData(userData.login),
     });
 
     const showCollapsedContent = () =>
-        userData2 &&
-        userData2.map((repo: RepoModel) => (
+        userRepos &&
+        userRepos.map((repo: RepoModel) => (
             <CollapsedContent key={repo.id} repo={repo} />
         ));
 
     return (
-        <div>
+        <StyledUserAccordionContainer lastListItem={lastListItem}>
             <StyledExpandContainer>
                 {userData.login}
                 <ExpandMore
@@ -40,7 +48,7 @@ const UserAccordion = ({ userData }: { userData: UserListItemModel }) => {
             <Collapse in={expanded} timeout='auto' unmountOnExit>
                 {showCollapsedContent()}
             </Collapse>
-        </div>
+        </StyledUserAccordionContainer>
     );
 };
 export default UserAccordion;

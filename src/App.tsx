@@ -8,6 +8,8 @@ import {
     QueryClientProvider,
 } from '@tanstack/react-query';
 import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -30,15 +32,20 @@ const queryClient = new QueryClient({
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <SnackbarProvider
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}>
-                <ThemeProvider theme={theme}>
-                    <MainPage />
-                </ThemeProvider>
-            </SnackbarProvider>
+            <Provider store={store}>
+                <SnackbarProvider
+                    preventDuplicate
+                    maxSnack={1}
+                    autoHideDuration={3000}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}>
+                    <ThemeProvider theme={theme}>
+                        <MainPage />
+                    </ThemeProvider>
+                </SnackbarProvider>
+            </Provider>
         </QueryClientProvider>
     );
 }

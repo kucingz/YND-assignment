@@ -9,10 +9,10 @@ export const StyledMainPageCard = styled(`div`)(({ theme }) => ({
     margin: '50px auto',
     padding: '20px',
     maxWidth: '800px',
-    borderRadius: '4px',
     display: 'flex',
-    gap: '20px',
     flexDirection: 'column',
+    gap: '10px',
+    //prevents scrollbar from repositioning page
     [theme.breakpoints.up('md')]: {
         paddingLeft: 'calc(100vw - 100%)',
     },

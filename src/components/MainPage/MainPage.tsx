@@ -1,62 +1,97 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextField, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
+import { useEffect } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
 import githubApi from '../../api/services/GithubService';
+import { UserListItemModel } from '../../api/types';
+import { setUsername } from '../../redux/slices/userSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/storeHooks';
+import Loader from '../Loader/Loader';
 import UserAccordion from '../UserAccordion/UserAccordion';
 import { StyledMainPageCard } from './StyledMainPage';
-import { UserListItemModel } from '../../api/types';
 
 const MainPage = () => {
     const { enqueueSnackbar } = useSnackbar();
-    const [username, setUsername] = useState('');
-
-    const { data: usersListData, refetch } = useQuery({
-        enabled: false,
-        queryKey: ['users'],
-        queryFn: () => githubApi.getUsersList(username),
+    const dispatch = useAppDispatch();
+    const storeUsername: string = useAppSelector(
+        (state) => state.user.username
+    );
+    const validationSchema = z.object({
+        username: z.string().min(1, 'Field is required'),
+    });
+    const {
+        handleSubmit,
+        formState: { errors },
+        register,
+        watch,
+    } = useForm({
+        resolver: zodResolver(validationSchema),
+        defaultValues: { username: '' },
     });
 
-    const handleUserSearch = () => {
+    const username = watch('username');
+
+    const {
+        isFetching,
+        data: userListData,
+        refetch,
+    } = useQuery({
+        enabled: false,
+        queryKey: ['users'],
+        queryFn: () => githubApi.getUserList(username),
+    });
+
+    const submitForm: SubmitHandler<{ username: string }> = (data) => {
+        dispatch(setUsername(data.username));
         refetch();
     };
 
-    useEffect(() => {
-        if (usersListData && usersListData.items.length === 0) {
-            enqueueSnackbar('No user with this name found', {
-                variant: 'info',
-            });
-        }
-    }, [usersListData]);
-
     //I am moving the conditions here for better readability
-    const showUserList = () =>
-        usersListData &&
-        usersListData.items.map((user: UserListItemModel) => (
-            <UserAccordion key={user.login} userData={user} />
-        ));
-
-    const showUserName = () =>
-        usersListData && (
-            <Typography>Showing users for "{username}"</Typography>
+    const showUserListAndName = () => {
+        return isFetching ? (
+            <Loader loading={isFetching} />
+        ) : (
+            userListData && (
+                <>
+                    <Typography>
+                        {userListData.items.length === 0
+                            ? `No user with the username "${storeUsername}" found`
+                            : `Showing users for "${storeUsername}"`}
+                    </Typography>
+                    {userListData.items.map((user: UserListItemModel, i) => (
+                        <UserAccordion
+                            lastListItem={userListData.items.length === i + 1}
+                            key={user.login}
+                            userData={user}
+                        />
+                    ))}
+                </>
+            )
         );
+    };
     return (
-        <StyledMainPageCard>
-            <Typography textAlign='center' variant='h2'>
-                YND Assignment
-            </Typography>
-            <TextField
-                onChange={(e) => {
-                    setUsername(e.target.value);
-                }}
-                placeholder='Enter username'
-            />
-            <Button variant='contained' onClick={handleUserSearch} fullWidth>
-                Search
-            </Button>
-            {showUserName()}
-            {showUserList()}
-        </StyledMainPageCard>
+        <form onSubmit={handleSubmit(submitForm)}>
+            <StyledMainPageCard>
+                <Typography textAlign='center' variant='h2'>
+                    YND Assignment
+                </Typography>
+
+                <TextField
+                    error={!!errors.username?.message}
+                    {...register('username')}
+                    placeholder='Enter username'
+                    helperText={errors.username?.message ?? ' '}
+                />
+
+                <Button variant='contained' type='submit' fullWidth>
+                    Search
+                </Button>
+                {showUserListAndName()}
+            </StyledMainPageCard>
+        </form>
     );
 };
 
