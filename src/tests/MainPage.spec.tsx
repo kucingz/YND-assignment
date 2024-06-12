@@ -1,19 +1,15 @@
+import { ThemeProvider } from '@emotion/react';
+import { configureStore } from '@reduxjs/toolkit';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
+import { Provider } from 'react-redux';
+import { vi } from 'vitest';
 import githubApi from '../api/services/GithubService';
 import { UserListItemModel } from '../api/types';
-import MainPage from '../components/MainPage/MainPage';
-import { configureStore } from '@reduxjs/toolkit';
-import {
-    QueryCache,
-    QueryClient,
-    QueryClientProvider,
-} from '@tanstack/react-query';
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
-import userReducer from '../redux/slices/userSlice';
-import { Provider } from 'react-redux';
-import { ThemeProvider } from '@emotion/react';
 import { theme } from '../assets/theme';
-import { vi } from 'vitest';
+import MainPage from '../components/MainPage/MainPage';
+import userReducer from '../redux/slices/userSlice';
 
 const store = configureStore({
     reducer: { user: userReducer },

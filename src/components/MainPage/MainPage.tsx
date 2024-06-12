@@ -1,8 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, TextField, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { useSnackbar } from 'notistack';
-import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import githubApi from '../../api/services/GithubService';
@@ -14,7 +12,6 @@ import UserAccordion from '../UserAccordion/UserAccordion';
 import { StyledMainPageCard } from './StyledMainPage';
 
 const MainPage = () => {
-    const { enqueueSnackbar } = useSnackbar();
     const dispatch = useAppDispatch();
     const storeUsername: string = useAppSelector(
         (state) => state.user.username
